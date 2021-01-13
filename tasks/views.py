@@ -8,13 +8,19 @@ from .models import Task
 # Create your views here.
 
 def taskList(request):
-    tasks_list = Task.objects.all().order_by('-created_at')
+    
+    search = request.GET.get('search')
 
-    paginator = Paginator(tasks_list, 3)
+    if search:
+        tasks = Task.objects.filter(title__icontains=search)
+    else:
+        tasks_list = Task.objects.all().order_by('-created_at')
 
-    page = request.GET.get('page')
+        paginator = Paginator(tasks_list, 3)
 
-    tasks = paginator.get_page(page)
+        page = request.GET.get('page')
+
+        tasks = paginator.get_page(page)
     
     return render(request, 'tasks/list.html', {'tasks': tasks})
 
