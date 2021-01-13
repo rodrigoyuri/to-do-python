@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 from django.contrib import messages
 
 from .forms import TaskForm
@@ -7,7 +8,14 @@ from .models import Task
 # Create your views here.
 
 def taskList(request):
-    tasks = Task.objects.all().order_by('-created_at')
+    tasks_list = Task.objects.all().order_by('-created_at')
+
+    paginator = Paginator(tasks_list, 3)
+
+    page = request.GET.get('page')
+
+    tasks = paginator.get_page(page)
+    
     return render(request, 'tasks/list.html', {'tasks': tasks})
 
 def taskView(request, id):
